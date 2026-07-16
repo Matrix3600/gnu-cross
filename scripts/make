@@ -1,72 +1,203 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+# This script requires a case-sensitive file system
+# (prerequisite for crosstool-ng).
+
+set -e -o pipefail
+
+. "$(dirname "$0")/tools/common.sh"
+
+
+function install_packages()
+{
+	local system="$(get_build_machine_type)"
+	system=${system%%-*}
+
+	local packages="\
+		autoconf \
+		automake \
+		bison \
+		bzip2 \
+		flex \
+		gawk \
+		gcc \
+		git \
+		gperf \
+		help2man \
+		make \
+		python3 \
+		rsync \
+		texinfo \
+		unzip \
+		wget \
+	"
+	case $system in
+		linux)
+			packages="${packages} \
+				g++ \
+				libncurses-dev \
+				libtool-bin \
+				patch \
+				xz-utils \
+			" ;;
+		macos)
+			packages="${packages} \
+				bash \
+				binutils \
+				gnu-sed \
+				gnu-tar \
+				gettext \
+				libelf \
+				libtool \
+				ncurses \
+				readline \
+				xz \
+				zstd \
+			" ;;
+	esac
+
+	case $system in
+		linux)
+			sudo apt-get update
+			sudo apt-get install -y --no-install-recommends $packages
+			;;
+		macos)
+			brew update
+			brew install --quiet $packages
+
+			local brew_prefix="$(brew --prefix)"
+			export PATH="${PATH}:${brew_prefix}/opt/binutils/bin"
+			;;
+	esac
+}
+
+
+function build_target()
+{
+	local TARGET="$1"
+
+	local src_dir="$CTNG_SOURCE_DIR"
+	if [ -z "$src_dir" ]; then
+		src_dir="source-tarballs"
+	fi
+	set +e
+	local source_dir="$(mkdir -p -- "$src_dir" &>/dev/null && \
+		cd -- "$src_dir" &>/dev/null && pwd)"
+	set -e
+	if [ -z "$source_dir" ]; then
+		echo "[ERROR] Source directory invalid (${src_dir})." >&2
+		return 1
+	fi
+
+	local SCRIPTS="$(pwd)/scripts"
+
+	sudo rm -rf crosstool-ng
+	tar -xf "crosstool-ng.tar.xz"
+
+	sudo rm -rf build
+	mkdir build
+	pushd build
+
+	local system
+	system="$(get_build_machine_type)"
+	system=${system%%-*}
+	if [ "$system" == "macos" ]; then
+		local brew_prefix="$(brew --prefix)"
+		PATH="${brew_prefix}/opt/bison/bin:${PATH}"
+		PATH="${brew_prefix}/opt/libtool/libexec/gnubin:${PATH}"
+		PATH="${brew_prefix}/opt/gnu-sed/libexec/gnubin:${PATH}"
+		export PATH
+
+		# On macOS, some headers required for the kernel headers installation are
+		# missing; we have to provide them.
+		HOSTCFLAGS="-I${brew_prefix}/opt/libelf/include"
+		HOSTCFLAGS+=" -I${SCRIPTS}/tools/headers"
+		export HOSTCFLAGS
+	fi
+
+	cp "../targets/${TARGET}/config" .config
+	cat <<- EOF >> .config
+		CT_CONFIG_VERSION="4"
+		CT_EXPERIMENTAL=y
+		CT_LOCAL_TARBALLS_DIR="${source_dir}"
+		CT_PREFIX_DIR="gnu-cross"
+		CT_CONNECT_TIMEOUT=120
+		CT_DOWNLOAD_WGET_OPTIONS="--tries=20 -nc --progress=dot:binary"
+		# CT_LOG_PROGRESS_BAR is not set
+		# CT_SHOW_CT_VERSION is not set
+	EOF
+	if [ "$system" != "linux" ]; then
+		cat <<- EOF >> .config
+			# CT_LINKER_MOLD is not set
+		EOF
+	fi
+	../crosstool-ng/bin/ct-ng olddefconfig
+	echo -e "\n*** CT config ***\n"
+	cat .config
+	echo -e "\n******\n"
+
+	../crosstool-ng/bin/ct-ng build
+
+	show_progress_message "Finalizing toolchain"
+
+	find "gnu-cross" -maxdepth 2 -exec chmod +w {} \;
+	rm -f "gnu-cross/build.log.bz2"
+	rm -f "gnu-cross/toolchain.cmake"
+	rm -f "gnu-cross/share/${TARGET}-ct-ng.config.bz2"
+	find "gnu-cross" -maxdepth 2 -exec chmod a-w {} \;
+
+	# Fix invalid absolute symbolic link
+	local linkname="gnu-cross/${TARGET}/sysroot/lib/ld-gnu-powerpc.so.1"
+	if [[ $TARGET == "powerpcle-unknown-linux-gnu" && \
+		$(readlink "$linkname") == "/usr/lib/libc.so" ]]; then
+		echo "Fixing invalid absolute link ${linkname}"
+		sudo ln -sf "../usr/lib/libc.so" "$linkname"
+	fi
+
+	# Tarball
+	sudo rm -rf ${TARGET}
+	mv gnu-cross ${TARGET}
+	sudo chown -R root:0 ${TARGET}
+
+	local host_type
+	host_type="$(get_build_machine_type)"
+	local name="${host_type}_${TARGET}.tar.xz"
+
+	show_progress_message "Creating \"${name}\""
+
+	tar -cJvf "../${name}" "${TARGET}"
+	local hash
+	hash="$(sha256sum "../${name}" | awk '{ print $1 }')"
+	printf '%s *%s\n' "$hash" "$name" > "../${name}.sha256"
+	popd
+	sudo rm -rf build
+	sudo rm -rf crosstool-ng
+
+	echo -e "\nThe complete toolchain is in"
+	echo -e "${name} .\n"
+}
+
 
 TARGET=$1
 
-# packages
-sudo apt-get update
-sudo apt-get install -y --no-install-recommends \
-  automake \
-  bison \
-  bzip2 \
-  ca-certificates \
-  cmake \
-  curl \
-  file \
-  flex \
-  g++ \
-  gawk \
-  gdb \
-  git \
-  gperf \
-  help2man \
-  libncurses-dev \
-  libssl-dev \
-  libtool-bin \
-  make \
-  patch \
-  pkg-config \
-  python3 \
-  rsync \
-  texinfo \
-  unzip \
-  wget \
-  xz-utils
+if [ -z "$TARGET" ]; then
+	echo "[ERROR] Target is missing." >&2
+	exit 1
+fi
 
-# patch
-pushd builder
-git reset --hard HEAD
-git clean -fd
-for i in ../targets/${TARGET}/*; do
-    if [[ $i == *.patch ]]; then
-        patch -Np1 -i $i
-    fi
-done
-popd
+if [[ $TARGET != "crosstool-ng" && ! -f "targets/${TARGET}/config" ]]; then
+	echo "[ERROR] Target not supported (${TARGET})." >&2
+	exit 1
+fi
 
-# crosstool-ng
-sudo mkdir -p /opt
-sudo chmod 0777 /opt
-sudo rm -rf /opt/ct-ng
-pushd builder
-./bootstrap
-./configure --prefix=/opt/ct-ng
-make -j`nproc`
-sudo make install
-popd
+install_packages
 
-# build
-rm -rf build
-mkdir -p build
-cp targets/${TARGET}/config build/.config
-pushd build
-/opt/ct-ng/bin/ct-ng olddefconfig
-/opt/ct-ng/bin/ct-ng build
-popd
+if [ ! -f "crosstool-ng.tar.xz" ]; then
+	build_crosstool_ng
+fi
 
-# tarball
-sudo mv /opt/x-tools/${TARGET} .
-sudo chown -R root:root ${TARGET}
-sudo tar -cJvf ${TARGET}.tar.xz ${TARGET}
-sudo sha256sum ${TARGET}.tar.xz | awk '{ print $1 }' > ${TARGET}.tar.xz.sha256
+if [ "$TARGET" != "crosstool-ng" ]; then
+	build_target "$TARGET"
+fi
+
+echo -e "\nDone.\n"

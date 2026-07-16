@@ -1,0 +1,168 @@
+name: Release macOS x64
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['macos-x64-*']
+
+permissions:
+  contents: read
+
+env:
+  TOOLCHAIN_HOST_NAME: macos-x64
+  CTNG_SOURCE_DIR: source-tarballs
+
+jobs:
+  pre-download:
+    name: Pre-download
+    runs-on: macos-26-intel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          submodules: true
+      - name: Download tarballs
+        run: |
+          ./scripts/pre-download "$CTNG_SOURCE_DIR"
+          ls -l "$CTNG_SOURCE_DIR"
+      - name: Upload tarballs
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-tarballs
+          path: ${{ env.CTNG_SOURCE_DIR }}
+          retention-days: 1
+
+  build-crosstool-ng:
+    name: Build crosstool-NG
+    runs-on: macos-26-intel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          submodules: true
+      - name: Build
+        run: |
+          ./scripts/make crosstool-ng
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: crosstool-ng
+          path: "crosstool-ng.tar.xz"
+          if-no-files-found: error
+          retention-days: 1
+
+  build:
+    name: Build
+    runs-on: macos-26-intel
+    needs: [pre-download, build-crosstool-ng]
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - aarch64-unknown-linux-gnu
+          - arm-unknown-linux-gnueabi
+          - arm-unknown-linux-gnueabihf
+          - armv7-unknown-linux-gnueabi
+          - armv7-unknown-linux-gnueabihf
+          - i586-unknown-linux-gnu
+          - i686-unknown-linux-gnu
+          - loongarch64-unknown-linux-gnu
+          - m68k-unknown-linux-gnu
+          - microblaze-xilinx-linux-gnu
+          - microblazeel-xilinx-linux-gnu
+          - mips-unknown-linux-gnu
+          - mips-unknown-linux-gnusf
+          - mipsel-unknown-linux-gnu
+          - mipsel-unknown-linux-gnusf
+          - mips64-unknown-linux-gnu
+          - mips64el-unknown-linux-gnu
+          - or1k-unknown-linux-gnu
+          - powerpc-unknown-linux-gnu
+          - powerpcle-unknown-linux-gnu
+          - powerpc64-unknown-linux-gnu
+          - powerpc64le-unknown-linux-gnu
+          - riscv32-unknown-linux-gnu
+          - riscv64-unknown-linux-gnu
+          - s390x-ibm-linux-gnu
+          - sh4-multilib-linux-gnu
+          - x86_64-unknown-linux-gnu
+    steps:
+      - name: Create case-sensitive workspace volume for macOS
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          cd ..
+          rmdir musl-cross
+          hdiutil create "${HOME}/Workspace.sparseimage" -volname musl-cross -type SPARSE -size 20g -fs HFSX
+          hdiutil mount "${HOME}/Workspace.sparseimage" -mountroot /Users/runner/work/musl-cross
+          cd musl-cross
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          submodules: true
+      - name: Download tarballs
+        uses: actions/download-artifact@v8
+        with:
+          name: source-tarballs
+          path: ${{ env.CTNG_SOURCE_DIR }}
+          merge-multiple: true
+      - name: Download crosstool-NG
+        uses: actions/download-artifact@v8
+        with:
+          name: crosstool-ng
+      - name: Build
+        run: |
+          ls -l "$CTNG_SOURCE_DIR"
+          ./scripts/make "${{ matrix.target }}"
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-log_${{ matrix.target }}
+          path: build/build.log
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.TOOLCHAIN_HOST_NAME }}_${{ matrix.target }}
+          path: "*_${{ matrix.target }}.tar.xz*"
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    name: Release
+    runs-on: macos-26-intel
+    permissions:
+      contents: write
+    needs: [build]
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Download packages
+        uses: actions/download-artifact@v8
+        with:
+          path: release
+          pattern: "${{ env.TOOLCHAIN_HOST_NAME }}_*-*-*"
+          merge-multiple: true
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=${GITHUB_REF#refs/tags/}
+          if [ "$(gh release view "$tag" 2>&1)" == "release not found" ]; then
+            gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="$tag" \
+              --generate-notes --draft
+          fi
+          hashfile="@${{ env.TOOLCHAIN_HOST_NAME }}-SHA256SUMS"
+          rm -f "$hashfile"
+          for name in release/*.tar.xz; do
+            gh release upload "$tag" "$name"
+            cat "${name}.sha256" >> "$hashfile"
+          done
+          gh release upload "$tag" "$hashfile"
