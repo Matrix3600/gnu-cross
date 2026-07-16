@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-CROSS_GNU_URL="https://github.com/cross-tools"
-CROSS_GNU_VER="20260515"
-CROSS_MUSL_URL="https://github.com/Matrix3600"
-CROSS_MUSL_VER="20260616"
-CROSS_MINGW_URL="https://github.com/Matrix3600"
-CROSS_MINGW_VER="20260616"
-
-
 function build_crosstool_ng()
 {
 	sudo rm -rf crosstool-ng

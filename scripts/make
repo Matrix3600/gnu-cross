@@ -146,14 +146,6 @@ function build_target()
 	rm -f "gnu-cross/share/${TARGET}-ct-ng.config.bz2"
 	find "gnu-cross" -maxdepth 2 -exec chmod a-w {} \;
 
-	# Fix invalid absolute symbolic link
-	local linkname="gnu-cross/${TARGET}/sysroot/lib/ld-gnu-powerpc.so.1"
-	if [[ $TARGET == "powerpcle-unknown-linux-gnu" && \
-		$(readlink "$linkname") == "/usr/lib/libc.so" ]]; then
-		echo "Fixing invalid absolute link ${linkname}"
-		sudo ln -sf "../usr/lib/libc.so" "$linkname"
-	fi
-
 	# Tarball
 	sudo rm -rf ${TARGET}
 	mv gnu-cross ${TARGET}
