@@ -1,0 +1,65 @@
+From 012ab7a5b188acd21001904fa0366ffc33d7c64e Mon Sep 17 00:00:00 2001
+From: hev <git@hev.cc>
+Date: Sun, 28 Sep 2025 11:59:50 +0800
+Subject: [PATCH] powerpc: Add support for little endian.
+
+---
+ ...owerpc-Add-support-for-little-endian.patch | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 packages/glibc/2.44/0001-powerpc-Add-support-for-little-endian.patch
+
+diff --git a/packages/glibc/2.44/0001-powerpc-Add-support-for-little-endian.patch b/packages/glibc/2.44/0001-powerpc-Add-support-for-little-endian.patch
+new file mode 100644
+index 00000000..327f7c8d
+--- /dev/null
++++ b/packages/glibc/2.44/0001-powerpc-Add-support-for-little-endian.patch
+@@ -0,0 +1,46 @@
++From b344ac124d53a6dcf716c63fe777dc8f0c73890b Mon Sep 17 00:00:00 2001
++From: hev <git@hev.cc>
++Date: Sun, 28 Sep 2025 11:58:06 +0800
++Subject: [PATCH] powerpc: Add support for little endian.
++
++---
++ sysdeps/unix/sysv/linux/powerpc/powerpc32/clone.S | 14 ++++++++++++++
++ 1 file changed, 14 insertions(+)
++
++diff --git a/sysdeps/unix/sysv/linux/powerpc/powerpc32/clone.S b/sysdeps/unix/sysv/linux/powerpc/powerpc32/clone.S
++index 20b8f8bd..9d4b2c5b 100644
++--- a/sysdeps/unix/sysv/linux/powerpc/powerpc32/clone.S
+++++ b/sysdeps/unix/sysv/linux/powerpc/powerpc32/clone.S
++@@ -39,7 +39,14 @@ ENTRY (__clone)
++ 	/* Set up stack frame for parent.  */
++ 	stwu	r1,-32(r1)
++ 	cfi_adjust_cfa_offset (32)
+++#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++ 	stmw	r28,16(r1)
+++#else
+++	stw	r28,16(r1)
+++	stw	r29,20(r1)
+++	stw	r30,24(r1)
+++	stw	r31,28(r1)
+++#endif
++ 
++ 	/* Set up stack frame for child.  */
++ 	clrrwi	r4,r4,4
++@@ -80,7 +87,14 @@ ENTRY (__clone)
++ 
++ L(parent):
++ 	/* Parent.  Restore registers & return.  */
+++#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
++ 	lmw	r28,16(r1)
+++#else
+++	lwz	r28,16(r1)
+++	lwz	r29,20(r1)
+++	lwz	r30,24(r1)
+++	lwz	r31,28(r1)
+++#endif
++ 	addi	r1,r1,32
++ 	bnslr+
++ 	b	__syscall_error@local
++-- 
++2.43.0
++
+-- 
+2.43.0
+
