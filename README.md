@@ -12,33 +12,33 @@ These [ready-to-use](https://github.com/Matrix3600/gnu-cross/releases) toolchain
 
 | Target                        | Kernel  | Binutils | GCC    | Glibc | Mold |
 |-------------------------------|:-------:|:--------:|:------:|:-----:|:----:|
-| aarch64-unknown-linux-gnu     | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| arm-unknown-linux-gnueabi     | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| arm-unknown-linux-gnueabihf   | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| armv7-unknown-linux-gnueabi   | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| armv7-unknown-linux-gnueabihf | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| i586-unknown-linux-gnu        | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| i686-unknown-linux-gnu        | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| loongarch64-unknown-linux-gnu | 5.19.16 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| m68k-unknown-linux-gnu        | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| microblazeel-xilinx-linux-gnu | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| microblaze-xilinx-linux-gnu   | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| mipsel-unknown-linux-gnu      | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| mipsel-unknown-linux-gnusf    | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| mips-unknown-linux-gnu        | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| mips-unknown-linux-gnusf      | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| mips64el-unknown-linux-gnu    | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| mips64-unknown-linux-gnu      | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| or1k-unknown-linux-gnu        | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | N/A  |
-| powerpcle-unknown-linux-gnu   | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| powerpc-unknown-linux-gnu     | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| powerpc64le-unknown-linux-gnu | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| powerpc64-unknown-linux-gnu   | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| riscv32-unknown-linux-gnu     | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| riscv64-unknown-linux-gnu     | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| s390x-ibm-linux-gnu           | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| sh4-multilib-linux-gnu        | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
-| x86_64-unknown-linux-gnu      | 5.4.302 | 2.46.1   | 16.1.0 | 2.44  | 2.41 |
+| aarch64-unknown-linux-gnu     | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| arm-unknown-linux-gnueabi     | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| arm-unknown-linux-gnueabihf   | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| armv7-unknown-linux-gnueabi   | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| armv7-unknown-linux-gnueabihf | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| i586-unknown-linux-gnu        | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| i686-unknown-linux-gnu        | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| loongarch64-unknown-linux-gnu | 5.19.16 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| m68k-unknown-linux-gnu        | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| microblazeel-xilinx-linux-gnu | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| microblaze-xilinx-linux-gnu   | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| mipsel-unknown-linux-gnu      | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| mipsel-unknown-linux-gnusf    | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| mips-unknown-linux-gnu        | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| mips-unknown-linux-gnusf      | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| mips64el-unknown-linux-gnu    | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| mips64-unknown-linux-gnu      | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| or1k-unknown-linux-gnu        | 5.4.302 | 2.47     | 16.1.0 | 2.44  | N/A  |
+| powerpcle-unknown-linux-gnu   | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| powerpc-unknown-linux-gnu     | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| powerpc64le-unknown-linux-gnu | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| powerpc64-unknown-linux-gnu   | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| riscv32-unknown-linux-gnu     | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| riscv64-unknown-linux-gnu     | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| s390x-ibm-linux-gnu           | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| sh4-multilib-linux-gnu        | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
+| x86_64-unknown-linux-gnu      | 5.4.302 | 2.47     | 16.1.0 | 2.44  | 2.41 |
 
 ## How to use
 
