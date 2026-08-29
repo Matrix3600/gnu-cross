@@ -30,7 +30,7 @@ jobs:
           submodules: true
       - name: Download tarballs
         run: |
-          ./scripts/pre-download "$CTNG_SOURCE_DIR"
+          scripts/pre-download "$CTNG_SOURCE_DIR"
           ls -l "$CTNG_SOURCE_DIR"
       - name: Upload tarballs
         uses: actions/upload-artifact@v7
@@ -50,7 +50,7 @@ jobs:
           submodules: true
       - name: Build
         run: |
-          ./scripts/make_canadian crosstool-ng
+          scripts/make_canadian crosstool-ng
       - name: Upload package
         uses: actions/upload-artifact@v7
         with:
@@ -112,7 +112,7 @@ jobs:
       - name: Build
         run: |
           ls -l "$CTNG_SOURCE_DIR"
-          ./scripts/make_canadian "${{ env.TOOLCHAIN_HOST }}" "${{ matrix.target }}"
+          scripts/make_canadian "${{ env.TOOLCHAIN_HOST }}" "${{ matrix.target }}"
       - name: Upload package
         uses: actions/upload-artifact@v7
         with:
