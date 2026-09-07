@@ -8,6 +8,5 @@
 #
 gettext-x.tar.xz | https://ftp.gnu.org/gnu/gettext
 gmp-x.tar.xz | https://ftp.gnu.org/gnu/gmp
-linux-5.4.302.tar.xz | https://www.kernel.org/pub/linux/kernel/v5.x
-linux-5.19.16.tar.xz | https://www.kernel.org/pub/linux/kernel/v5.x
+linux-6.1.183.tar.xz | https://www.kernel.org/pub/linux/kernel/v6.x
 ncurses-x.tar.gz | https://invisible-mirror.net/archives/ncurses
