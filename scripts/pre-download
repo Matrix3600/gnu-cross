@@ -82,7 +82,7 @@ function install_packages()
 	system="$(get_build_machine_type)"
 	system=${system%%-*}
 
-	local packages="wget"
+	local packages="git wget"
 	case $system in
 		linux)
 			packages="${packages} patch"
