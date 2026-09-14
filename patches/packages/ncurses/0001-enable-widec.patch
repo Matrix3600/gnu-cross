@@ -1,0 +1,13 @@
+diff --git a/scripts/build/companion_libs/220-ncurses.sh b/scripts/build/companion_libs/220-ncurses.sh
+index 46b1ec72..d7819233 100644
+--- a/scripts/build/companion_libs/220-ncurses.sh
++++ b/scripts/build/companion_libs/220-ncurses.sh
+@@ -133,8 +133,6 @@ do_ncurses_backend() {
+         esac
+     done
+ 
+-    ncurses_opts+=("--disable-widec")
+-
+     if [ "${CT_NCURSES_NEW_ABI}" != "y" ]; then
+         ncurses_opts+=("--with-abi-version=5")
+     fi
