@@ -114,13 +114,6 @@ function build_target()
 		HOSTCFLAGS+=" -I${SCRIPTS}/tools/headers"
 		export HOSTCFLAGS
 	fi
-	if [ "$system" == "linux" ]; then
-		local march
-		march=$(gcc -Q --help=target | grep "^[[:space:]]*-march" | awk '{print $2}')
-		echo "GCC target architecture: ${march}"
-		march=$(gcc -march=x86-64 -Q --help=target | grep "^[[:space:]]*-march" | awk '{print $2}')
-		echo "GCC target architecture x86-64: ${march}"
-	fi
 
 	cp "../targets/${TARGET}/config" .config
 	cat <<- EOF >> .config
@@ -132,9 +125,6 @@ function build_target()
 		CT_DOWNLOAD_WGET_OPTIONS="--tries=20 -nc --progress=dot:binary"
 		# CT_LOG_PROGRESS_BAR is not set
 		# CT_SHOW_CT_VERSION is not set
-		CT_EXTRA_CFLAGS_FOR_BUILD="-march=x86-64"
-		CT_EXTRA_CXXFLAGS_FOR_BUILD="-march=x86-64"
-		CT_CC_GCC_EXTRA_CONFIG_ARRAY="--with-arch=x86-64"
 	EOF
 	if [ "$system" != "linux" ]; then
 		cat <<- EOF >> .config
