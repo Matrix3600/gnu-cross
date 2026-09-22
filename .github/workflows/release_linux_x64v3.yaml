@@ -1,4 +1,4 @@
-name: Release Linux x64
+name: Release Linux x86-64 level 3
 
 on:
   workflow_dispatch:
