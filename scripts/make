@@ -146,8 +146,6 @@ function build_target()
 	cat .config
 	echo -e "\n******\n"
 
-	export CFLAGS="-march=x86-64"
-
 	../crosstool-ng/bin/ct-ng build
 
 	show_progress_message "Finalizing toolchain"
