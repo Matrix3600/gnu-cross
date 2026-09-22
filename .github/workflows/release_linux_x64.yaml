@@ -8,13 +8,13 @@ on:
         required: true
         type: string
   push:
-    tags: ['u26-x64-*']
+    tags: ['u26-x64v3-*']
 
 permissions:
   contents: read
 
 env:
-  TOOLCHAIN_HOST_NAME: linux-x64
+  TOOLCHAIN_HOST_NAME: linux-x64v3
   CTNG_SOURCE_DIR: source-tarballs
 
 jobs:
@@ -90,7 +90,7 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.TOOLCHAIN_HOST_NAME }}_${{ matrix.target }}
+          name: "${{ env.TOOLCHAIN_HOST_NAME }}_${{ matrix.target }}"
           path: "*_${{ matrix.target }}.tar.xz*"
           if-no-files-found: error
           retention-days: 1
