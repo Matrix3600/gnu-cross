@@ -134,6 +134,7 @@ function build_target()
 		# CT_SHOW_CT_VERSION is not set
 		CT_EXTRA_CFLAGS_FOR_BUILD="-march=x86-64"
 		CT_EXTRA_CXXFLAGS_FOR_BUILD="-march=x86-64"
+		CT_CC_GCC_EXTRA_CONFIG_ARRAY="--with-arch=x86-64"
 	EOF
 	if [ "$system" != "linux" ]; then
 		cat <<- EOF >> .config
@@ -144,6 +145,8 @@ function build_target()
 	echo -e "\n*** CT config ***\n"
 	cat .config
 	echo -e "\n******\n"
+
+	export CFLAGS="-march=x86-64"
 
 	../crosstool-ng/bin/ct-ng build
 
