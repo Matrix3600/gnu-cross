@@ -114,6 +114,11 @@ function build_target()
 		HOSTCFLAGS+=" -I${SCRIPTS}/tools/headers"
 		export HOSTCFLAGS
 	fi
+	if [ "$system" == "linux" ]; then
+		local march
+		march=$(gcc -Q --help=target | grep "^[[:space:]]*-march" | awk '{print $2}')
+		echo "GCC target architecture: ${march}"
+	fi
 
 	cp "../targets/${TARGET}/config" .config
 	cat <<- EOF >> .config
