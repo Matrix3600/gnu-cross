@@ -191,31 +191,34 @@ function build_target()
 
 	show_progress_message "Finalizing toolchain"
 
-	# Dynamic library for host
-	find "gnu-cross" -maxdepth 2 -exec chmod +w {} \;
-	mkdir -p "gnu-cross/lib"
-	local host_lib="${HOST}/${HOST}/sysroot/lib"
-	for f in "${host_lib}"/ld-*.so.* ; do
-		if [ -f "$f" ]; then
-			echo "Copying \"$f\" to \"gnu-cross/lib/\""
-			cp "$f" "gnu-cross/lib/"
-		fi
-	done
-	mkdir -p "gnu-cross/bin"
-	local host_lib2="${HOST}/${HOST}/sysroot/usr/${HOST}/bin"
-	for f in "${host_lib2}"/libwinpthread-*.dll ; do
-		if [ -f "$f" ]; then
-			echo "Copying \"$f\" to \"gnu-cross/bin/\""
-			cp "$f" "gnu-cross/bin/"
-		fi
-	done
-	rm -f "gnu-cross/build.log.bz2"
-	rm -f "gnu-cross/toolchain.cmake"
-	rm -f "gnu-cross/share/${TARGET}-ct-ng.config.bz2"
-	find "gnu-cross" -maxdepth 2 -exec chmod a-w {} \;
-
 	local host_type
 	host_type="$(get_host_type "$HOST")"
+
+	if [ "$host_type" != "$build" ]; then
+		# Dynamic library for host
+		find "gnu-cross" -maxdepth 2 -exec chmod +w {} \;
+		mkdir -p "gnu-cross/lib"
+		local host_lib="${HOST}/${HOST}/sysroot/lib"
+		for f in "${host_lib}"/ld-*.so.* ; do
+			if [ -f "$f" ]; then
+				echo "Copying \"$f\" to \"gnu-cross/lib/\""
+				cp "$f" "gnu-cross/lib/"
+			fi
+		done
+		mkdir -p "gnu-cross/bin"
+		local host_lib2="${HOST}/${HOST}/sysroot/usr/${HOST}/bin"
+		for f in "${host_lib2}"/libwinpthread-*.dll ; do
+			if [ -f "$f" ]; then
+				echo "Copying \"$f\" to \"gnu-cross/bin/\""
+				cp "$f" "gnu-cross/bin/"
+			fi
+		done
+		rm -f "gnu-cross/build.log.bz2"
+		rm -f "gnu-cross/toolchain.cmake"
+		rm -f "gnu-cross/share/${TARGET}-ct-ng.config.bz2"
+		find "gnu-cross" -maxdepth 2 -exec chmod a-w {} \;
+	fi
+
 	if [[ $host_type =~ win-* ]]; then
 		rename_files_windows "gnu-cross/${TARGET}"
 	fi
