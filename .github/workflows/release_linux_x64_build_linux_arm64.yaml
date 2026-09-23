@@ -1,4 +1,4 @@
-name: Release Linux x86-64 level 3
+name: Release Linux x64, built on Linux ARM64
 
 on:
   workflow_dispatch:
@@ -8,19 +8,20 @@ on:
         required: true
         type: string
   push:
-    tags: ['u26-x64v3-*']
+    tags: ['u26-x64-*']
 
 permissions:
   contents: read
 
 env:
-  TOOLCHAIN_HOST_NAME: linux-x64v3
+  TOOLCHAIN_HOST: x86_64-unknown-linux-gnu
+  TOOLCHAIN_HOST_NAME: linux-x64
   CTNG_SOURCE_DIR: source-tarballs
 
 jobs:
   pre-download:
     name: Pre-download
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-26.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -40,7 +41,7 @@ jobs:
 
   build-crosstool-ng:
     name: Build crosstool-NG
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-26.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -49,7 +50,7 @@ jobs:
           submodules: true
       - name: Build
         run: |
-          scripts/make crosstool-ng
+          scripts/make_canadian crosstool-ng
       - name: Upload package
         uses: actions/upload-artifact@v7
         with:
@@ -60,7 +61,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-26.04-arm
     needs: [pre-download, build-crosstool-ng]
     strategy:
       fail-fast: true
@@ -86,7 +87,7 @@ jobs:
       - name: Build
         run: |
           ls -l "$CTNG_SOURCE_DIR"
-          scripts/make "${{ matrix.target }}"
+          scripts/make_canadian "${{ env.TOOLCHAIN_HOST }}" "${{ matrix.target }}"
       - name: Upload package
         uses: actions/upload-artifact@v7
         with:
@@ -97,7 +98,7 @@ jobs:
 
   release:
     name: Release
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-26.04-arm
     permissions:
       contents: write
     needs: [build]
