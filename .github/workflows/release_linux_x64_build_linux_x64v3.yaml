@@ -1,6 +1,6 @@
-name: Release Linux x64, built on Linux ARM64
+name: Release Linux x64, built on Linux x86-64-v3
 
-# Requires a gnu-cross linux-arm64 published release
+# Requires a gnu-cross linux-x64v3 published release
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
         required: true
         type: string
   push:
-    tags: ['u26-x64-*']
+    tags: ['u26-x64v1-*']
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ env:
 jobs:
   pre-download:
     name: Pre-download
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -43,7 +43,7 @@ jobs:
 
   build-crosstool-ng:
     name: Build crosstool-NG
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -63,7 +63,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-26.04
     needs: [pre-download, build-crosstool-ng]
     strategy:
       fail-fast: true
@@ -100,7 +100,7 @@ jobs:
 
   release:
     name: Release
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     needs: [build]
