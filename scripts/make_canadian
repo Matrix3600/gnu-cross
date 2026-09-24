@@ -94,6 +94,8 @@ function install_packages()
 
 function get_host_toolchain()
 {
+	# Output: HOST_TOOLCHAIN_NAME
+
 	local HOST="$1"
 
 	local build
@@ -116,15 +118,15 @@ function get_host_toolchain()
 		fi
 	fi
 
-	local host_toolchain_name=""
+	local toolchain_name=""
 	for build_type in $build_types; do
 		local name="${build_type}_${HOST}.tar.xz"
 		if [ -f "$name" ]; then
-			host_toolchain_name=$name
+			toolchain_name=$name
 			break
 		fi
 	done
-	if [ -z "$host_toolchain_name" ]; then
+	if [ -z "$toolchain_name" ]; then
 		for build_type in $build_types; do
 			local arch="${build_type##*-}"
 			local name="${build_type}_${HOST}.tar.xz"
@@ -140,16 +142,18 @@ function get_host_toolchain()
 			if ! wget -nv -nc -T 120 --tries=20 "$url"; then
 				continue
 			fi
-			host_toolchain_name=$name
+			toolchain_name=$name
 			break
 		done
 	fi
-	if [ -z "$host_toolchain_name" ]; then
+	if [ -z "$toolchain_name" ]; then
 		echo "[ERROR] Host not supported (${HOST})." >&2
 		return 1
 	fi
 
-	printf '%s\n' "$host_toolchain_name"
+	echo "Host toolchain: ${toolchain_name}"
+
+	HOST_TOOLCHAIN_NAME=$toolchain_name
 }
 
 
@@ -157,7 +161,6 @@ function build_target()
 {
 	local HOST="$1"
 	local TARGET="$2"
-	local HOST_TOOLCHAIN_NAME="$3"
 
 	local src_dir="$CTNG_SOURCE_DIR"
 	if [ -z "$src_dir" ]; then
@@ -302,12 +305,12 @@ if [ "$HOST" == "$TARGET" ]; then
 	exit 1
 fi
 
+HOST_TOOLCHAIN_NAME=""
+
 install_packages
 
-host_toolchain_name=""
-
 if [ "$TARGET" != "crosstool-ng" ]; then
-	host_toolchain_name=$(get_host_toolchain "$HOST")
+	get_host_toolchain "$HOST"
 fi
 
 if [ ! -f "crosstool-ng.tar.xz" ]; then
@@ -315,7 +318,7 @@ if [ ! -f "crosstool-ng.tar.xz" ]; then
 fi
 
 if [ "$TARGET" != "crosstool-ng" ]; then
-	build_target "$HOST" "$TARGET" "$host_toolchain_name"
+	build_target "$HOST" "$TARGET"
 fi
 
 echo -e "\nDone.\n"
