@@ -92,21 +92,6 @@ function install_packages()
 }
 
 
-function get_host_toolchain_type()
-{
-	local HOST="$1"
-
-	local build_type
-	build_type="$(get_build_machine_type)"
-	if [[ $build_type == "linux-x64" && $HOST == "x86_64-unknown-linux-gnu" ]]; then
-			# Host=generic x86-64, build=x86-64 level > 1 (currently 3).
-			build_type="linux-x64v3"
-	fi
-
-	printf '%s\n' "$build_type"
-}
-
-
 function get_host_toolchain()
 {
 	# Output: HOST_TOOLCHAIN_NAME
@@ -180,6 +165,7 @@ function build_target()
 {
 	local HOST="$1"
 	local TARGET="$2"
+	local HOST_TOOLCHAIN_NAME="$3"
 
 	local src_dir="$CTNG_SOURCE_DIR"
 	if [ -z "$src_dir" ]; then
@@ -225,13 +211,7 @@ function build_target()
 	echo -e "\n******\n"
 
 	# Install the host toolchain
-<<<<<<< HEAD
 	tar -xf "../${HOST_TOOLCHAIN_NAME}"
-=======
-	local build_type
-	build_type="$(get_host_toolchain_type "$HOST")"
-	tar -xf "../${build_type}_${HOST}.tar.xz"
->>>>>>> d7ec2c4 (Update make_canadian)
 
 	(
 		export PATH="$(pwd)/${HOST}/bin:$PATH"
@@ -334,8 +314,10 @@ HOST_TOOLCHAIN_NAME=""
 
 install_packages
 
+host_toolchain_name=""
+
 if [ "$TARGET" != "crosstool-ng" ]; then
-	get_host_toolchain "$HOST"
+	host_toolchain_name=$(get_host_toolchain "$HOST")
 fi
 
 if [ ! -f "crosstool-ng.tar.xz" ]; then
@@ -343,7 +325,7 @@ if [ ! -f "crosstool-ng.tar.xz" ]; then
 fi
 
 if [ "$TARGET" != "crosstool-ng" ]; then
-	build_target "$HOST" "$TARGET"
+	build_target "$HOST" "$TARGET" "$host_toolchain_name"
 fi
 
 echo -e "\nDone.\n"
