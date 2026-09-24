@@ -165,7 +165,6 @@ function build_target()
 {
 	local HOST="$1"
 	local TARGET="$2"
-	local HOST_TOOLCHAIN_NAME="$3"
 
 	local src_dir="$CTNG_SOURCE_DIR"
 	if [ -z "$src_dir" ]; then
@@ -314,10 +313,8 @@ HOST_TOOLCHAIN_NAME=""
 
 install_packages
 
-host_toolchain_name=""
-
 if [ "$TARGET" != "crosstool-ng" ]; then
-	host_toolchain_name=$(get_host_toolchain "$HOST")
+	get_host_toolchain "$HOST"
 fi
 
 if [ ! -f "crosstool-ng.tar.xz" ]; then
@@ -325,7 +322,7 @@ if [ ! -f "crosstool-ng.tar.xz" ]; then
 fi
 
 if [ "$TARGET" != "crosstool-ng" ]; then
-	build_target "$HOST" "$TARGET" "$host_toolchain_name"
+	build_target "$HOST" "$TARGET"
 fi
 
 echo -e "\nDone.\n"
