@@ -45,7 +45,6 @@ function install_packages()
 				bash \
 				binutils \
 				gnu-sed \
-				gnu-tar \
 				gettext \
 				libelf \
 				libtool \

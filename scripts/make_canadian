@@ -138,6 +138,10 @@ function get_host_toolchain()
 				*-mingw32)
 					url="${CROSS_MINGW_URL}/mingw-cross/releases/download/${arch}-${CROSS_MINGW_VER}/${name}"
 					;;
+				*)
+					echo "[ERROR] Host not supported (${HOST})." >&2
+					return 1
+					;;
 			esac
 			if ! wget -nv -nc -T 120 --tries=20 "$url"; then
 				continue
