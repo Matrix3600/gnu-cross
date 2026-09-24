@@ -98,7 +98,7 @@ function get_host_toolchain_type()
 
 	local build_type
 	build_type="$(get_build_machine_type)"
-	if [[ $build_type == "linux-x64" && $HOST == "x86_64-unknown-linux-gnu" ]; then
+	if [[ $build_type == "linux-x64" && $HOST == "x86_64-unknown-linux-gnu" ]]; then
 			# Host=generic x86-64, build=x86-64 level > 1 (currently 3).
 			build_type="linux-x64v3"
 	fi
