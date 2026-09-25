@@ -1,5 +1,7 @@
 name: Release Windows x64, built on Linux ARM64
 
+# Requires a mingw-cross linux-arm64 published release
+
 on:
   workflow_dispatch:
     inputs:
