@@ -94,40 +94,70 @@ function install_packages()
 
 function get_host_toolchain()
 {
+	# Output: HOST_TOOLCHAIN_NAME
+
 	local HOST="$1"
 
 	local build
 	build="$(get_build_machine_type)"
 	case $build in
-		linux-x64)
-			if [ "$HOST" == "x86_64-unknown-linux-gnu" ]; then
-				# Host=generic x86-64, build=x86-64 level > 1 (currently 3).
-				build="linux-x64v3"
-			fi
-			;;
-		linux-arm64) ;;
+		linux-x64|linux-arm64) ;;
 		*)
 			echo "[ERROR] Build machine not supported (${build})." >&2
 			return 1
 			;;
 	esac
-	local arch="${build##*-}"
-	local name="${build}_${HOST}.tar.xz"
-	if [ ! -f "$name" ]; then
-		local url=""
-		case $HOST in
-			*-gnu)
-				url="${CROSS_GNU_URL}/gnu-cross/releases/download/${arch}-${CROSS_GNU_VER}/${name}"
-				;;
-			*-mingw32)
-				url="${CROSS_MINGW_URL}/mingw-cross/releases/download/${arch}-${CROSS_MINGW_VER}/${name}"
-				;;
-		esac
-		if ! wget -nv -nc -T 120 --tries=20 "$url"; then
-			echo "[ERROR] Host not supported (${HOST})." >&2
-			return 1
+
+	local build_types="$build"
+	if [[ $build == "linux-x64" && $HOST == "x86_64-unknown-linux-gnu" ]]; then
+		# Host=generic x86-64, build=x86-64 level > 1.
+		local gcc_arch
+		gcc_arch=$(gcc -Q --help=target | grep "^[[:space:]]*-march" | awk '{print $2}')
+		if [[ $gcc_arch =~ ^x86-64-v([1-9][0-9]*)$ ]]; then
+			build_types="linux-x64v${BASH_REMATCH[1]} ${build}"
 		fi
 	fi
+
+	local toolchain_name=""
+	for build_type in $build_types; do
+		local name="${build_type}_${HOST}.tar.xz"
+		if [ -f "$name" ]; then
+			toolchain_name=$name
+			break
+		fi
+	done
+	if [ -z "$toolchain_name" ]; then
+		for build_type in $build_types; do
+			local arch="${build_type##*-}"
+			local name="${build_type}_${HOST}.tar.xz"
+			local url=""
+			case $HOST in
+				*-gnu)
+					url="${CROSS_GNU_URL}/gnu-cross/releases/download/${arch}-${CROSS_GNU_VER}/${name}"
+					;;
+				*-mingw32)
+					url="${CROSS_MINGW_URL}/mingw-cross/releases/download/${arch}-${CROSS_MINGW_VER}/${name}"
+					;;
+				*)
+					echo "[ERROR] Host not supported (${HOST})." >&2
+					return 1
+					;;
+			esac
+			if ! wget -nv -nc -T 120 --tries=20 "$url"; then
+				continue
+			fi
+			toolchain_name=$name
+			break
+		done
+	fi
+	if [ -z "$toolchain_name" ]; then
+		echo "[ERROR] Host not supported (${HOST})." >&2
+		return 1
+	fi
+
+	echo "Host toolchain: ${toolchain_name}"
+
+	HOST_TOOLCHAIN_NAME=$toolchain_name
 }
 
 
@@ -180,9 +210,7 @@ function build_target()
 	echo -e "\n******\n"
 
 	# Install the host toolchain
-	local build
-	build="$(get_build_machine_type)"
-	tar -xf "../${build}_${HOST}.tar.xz"
+	tar -xf "../${HOST_TOOLCHAIN_NAME}"
 
 	(
 		export PATH="$(pwd)/${HOST}/bin:$PATH"
@@ -196,7 +224,9 @@ function build_target()
 	mkdir -p "gnu-cross/lib"
 	local host_lib="${HOST}/${HOST}/sysroot/lib"
 	for f in "${host_lib}"/ld-*.so.* ; do
-		if [ -f "$f" ]; then
+		local f_name
+		f_name="$(basename "$f")"
+		if [[ -f $f && $f_name != "ld-linux-x86-64.so.2" ]]; then
 			echo "Copying \"$f\" to \"gnu-cross/lib/\""
 			cp "$f" "gnu-cross/lib/"
 		fi
@@ -216,6 +246,7 @@ function build_target()
 
 	local host_type
 	host_type="$(get_host_type "$HOST")"
+
 	if [[ $host_type =~ win-* ]]; then
 		rename_files_windows "gnu-cross/${TARGET}"
 	fi
@@ -277,6 +308,8 @@ if [ "$HOST" == "$TARGET" ]; then
 	echo "[ERROR] Target and host are identical." >&2
 	exit 1
 fi
+
+HOST_TOOLCHAIN_NAME=""
 
 install_packages
 
