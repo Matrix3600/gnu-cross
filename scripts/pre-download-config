@@ -8,5 +8,7 @@
 #
 gettext-x.tar.xz | https://ftp.gnu.org/gnu/gettext
 gmp-x.tar.xz | https://ftp.gnu.org/gnu/gmp
+isl-x.tar.xz | https://libisl.sourceforge.io
+libiconv-x.tar.gz | https://ftp.gnu.org/gnu/libiconv
 linux-6.1.183.tar.xz | https://www.kernel.org/pub/linux/kernel/v6.x
 ncurses-x.tar.gz | https://invisible-mirror.net/archives/ncurses https://ftp.gnu.org/gnu/ncurses
