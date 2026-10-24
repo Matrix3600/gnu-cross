@@ -3,13 +3,13 @@
 #
 # <package>-<version>.tar.* | <url> ...
 #
-# If <version> if empty or non-numeric, the latest version of the package
-# supported by crosstool-NG is used.
+# If <version> contains a BASH pattern, the latest matching version of the
+# package supported by crosstool-NG is used.
 #
-gettext-x.tar.xz | https://ftp.gnu.org/gnu/gettext
-gmp-x.tar.xz | https://ftp.gnu.org/gnu/gmp
-isl-x.tar.xz | https://libisl.sourceforge.io
-libiconv-x.tar.gz | https://ftp.gnu.org/gnu/libiconv
-linux-6.1.189.tar.xz | https://www.kernel.org/pub/linux/kernel/v6.x
-linux-7.0.12.tar.xz | https://www.kernel.org/pub/linux/kernel/v7.x
-ncurses-x.tar.gz | https://invisible-mirror.net/archives/ncurses https://ftp.gnu.org/gnu/ncurses
+gettext-*.tar.xz | https://ftp.gnu.org/gnu/gettext
+gmp-*.tar.xz | https://ftp.gnu.org/gnu/gmp
+isl-*.tar.xz | https://libisl.sourceforge.io
+libiconv-*.tar.gz | https://ftp.gnu.org/gnu/libiconv
+linux-6.1.*.tar.xz | https://www.kernel.org/pub/linux/kernel/v6.x
+linux-7.0.*.tar.xz | https://www.kernel.org/pub/linux/kernel/v7.x
+ncurses-*.tar.gz | https://invisible-mirror.net/archives/ncurses https://ftp.gnu.org/gnu/ncurses
