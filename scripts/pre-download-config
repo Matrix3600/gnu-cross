@@ -3,13 +3,13 @@
 #
 # <package>-<version>.tar.* | <url> ...
 #
-# If <version> contains a BASH pattern, the latest matching version of the
+# If <version> contains a Bash pattern, the latest matching version of the
 # package supported by crosstool-NG is used.
 #
-gettext-*.tar.xz | https://ftp.gnu.org/gnu/gettext
-gmp-*.tar.xz | https://ftp.gnu.org/gnu/gmp
+gettext-*.tar.xz | https://ftpmirror.gnu.org/gettext
+gmp-*.tar.xz | https://ftpmirror.gnu.org/gmp
 isl-*.tar.xz | https://libisl.sourceforge.io
-libiconv-*.tar.gz | https://ftp.gnu.org/gnu/libiconv
-linux-6.1.*.tar.xz | https://www.kernel.org/pub/linux/kernel/v6.x
-linux-7.0.*.tar.xz | https://www.kernel.org/pub/linux/kernel/v7.x
-ncurses-*.tar.gz | https://invisible-mirror.net/archives/ncurses https://ftp.gnu.org/gnu/ncurses
+libiconv-*.tar.gz | https://ftpmirror.gnu.org/libiconv
+linux-6.1.*.tar.xz | https://cdn.kernel.org/pub/linux/kernel/v6.x
+linux-7.0.*.tar.xz | https://cdn.kernel.org/pub/linux/kernel/v7.x
+ncurses-*.tar.gz | https://invisible-mirror.net/archives/ncurses https://ftpmirror.gnu.org/ncurses
