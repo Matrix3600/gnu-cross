@@ -1,0 +1,34 @@
+diff --git a/packages/linux/7.0.12/chksum b/packages/linux/7.0.12/chksum
+deleted file mode 100644
+index e415cae4..00000000
+--- a/packages/linux/7.0.12/chksum
++++ /dev/null
+@@ -1,8 +0,0 @@
+-md5 linux-7.0.12.tar.xz 0e510b924210c2f4a8429dce4ee7bb4c
+-sha1 linux-7.0.12.tar.xz 180e3b106ea9e19913e885d27eea5566f9741e42
+-sha256 linux-7.0.12.tar.xz 57edc9a41efc1ca6b797afa8f4a587a30da2af6bca7356eb56e1e1a4ada265da
+-sha512 linux-7.0.12.tar.xz 5c1df7992b8b78ba28b441a5efdb3fd8d07c2a0ce1421e42a409001dea4b8bdf1aa2bda26645439603c3a903a00d7dfa14324ad2f59f8131174c83d1a5da2f45
+-md5 linux-7.0.12.tar.gz 527d1c4b56d50b475a27e12d57e37e72
+-sha1 linux-7.0.12.tar.gz 98da007d31c608b02b615256f5bfbee71d57dd02
+-sha256 linux-7.0.12.tar.gz ccff01f31b1c8e59cc5d23f2b966c065b2ac69aa9ee69acfac45f8832044dde1
+-sha512 linux-7.0.12.tar.gz f0add38305797c2c89e0ae66ec004a86aa17ccfce96b9a1a1937ac6b62ae5f73b5e870f47609d6d2fc4c698a9da3872eb29da7b75e715bec9965a55752a30293
+diff --git a/packages/linux/7.0.14/chksum b/packages/linux/7.0.14/chksum
+new file mode 100755
+index 00000000..55bf81ab
+--- /dev/null
++++ b/packages/linux/7.0.14/chksum
+@@ -0,0 +1,8 @@
++md5 linux-7.0.14.tar.xz 6ee085a92989af3130e2400d6260253d
++sha1 linux-7.0.14.tar.xz c4e4573ab5ff4cd2a5bf646ce24ac1902f02d6c1
++sha256 linux-7.0.14.tar.xz de9999b784d2293f00d39c62d8f92a08ab8a54bc4e80ffd250a0c09cb07a0f98
++sha512 linux-7.0.14.tar.xz 924b4a348a441e628769cbc2aadc0386a40abb9538e6c3b54730c7277b5fb7d7caf080ab2f4f0bf2e507a1b13125f5de35a532f6c3be6649f5f5d1b28cf5a375
++md5 linux-7.0.14.tar.gz 057cd7d3c8dc2e2e9cc873c88196c001
++sha1 linux-7.0.14.tar.gz 494f258eac46f5845824bc9531f21d8a915ad27f
++sha256 linux-7.0.14.tar.gz c59f83e4e29694803a839ff86fa88dd77a6c6d1f0d88dc557b32806c3a3f07f0
++sha512 linux-7.0.14.tar.gz d416f94689a278456e92ea6fc1a6a522f9c34a55518e8715473e622f9cdfea03bb89852cc7c856abeb3a51b80cd71d27968b3eace5a34448fa9f25cc6ae6ea5f
+diff --git a/packages/linux/7.0.12/version.desc b/packages/linux/7.0.14/version.desc
+old mode 100644
+new mode 100755
+similarity index 100%
+rename from packages/linux/7.0.12/version.desc
+rename to packages/linux/7.0.14/version.desc

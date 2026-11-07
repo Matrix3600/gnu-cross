@@ -1,0 +1,32 @@
+diff --git a/packages/linux/6.1.189/chksum b/packages/linux/6.1.189/chksum
+deleted file mode 100644
+index 57fff673..00000000
+--- a/packages/linux/6.1.189/chksum
++++ /dev/null
+@@ -1,8 +0,0 @@
+-md5 linux-6.1.189.tar.xz b06cf0691e83df0a0ea81d3ff18c0a3b
+-sha1 linux-6.1.189.tar.xz 62ad7d13ff75fff6c849136ce4a1da9283bac83e
+-sha256 linux-6.1.189.tar.xz 3ec834a2fefc9a08aac62f993525d7acd10163db6f01d63b4549cbff3f5c9439
+-sha512 linux-6.1.189.tar.xz adb8ac83f172802271f98510741681eca414ba883843843950bd8688fd4cf861e2d7fbaed0ca523b5b51ba8d435f13abfac7d835b37d8bcc304c8c3aa2f9db65
+-md5 linux-6.1.189.tar.gz 8a755e71955bfd31d8395aa8042fd03e
+-sha1 linux-6.1.189.tar.gz a92863f48733614c4c95dbe24783a6556461cc96
+-sha256 linux-6.1.189.tar.gz 7385d341c80b79d1da34658bb21652d552ba25ac1d65f453bb48c39d9536b87c
+-sha512 linux-6.1.189.tar.gz d5b6e1c291b73c8cae563eb4c93b11d055b3be2b158f2ebbaa331f89cd12f0f965c83aefff5816b74a14038c110f2d5b5294ef7a110ddb888b0bdb5648189a30
+diff --git a/packages/linux/6.1.192/chksum b/packages/linux/6.1.192/chksum
+new file mode 100644
+index 00000000..67a76c2d
+--- /dev/null
++++ b/packages/linux/6.1.192/chksum
+@@ -0,0 +1,8 @@
++md5 linux-6.1.192.tar.xz d1983c9e002354a9318340c7d9df30d9
++sha1 linux-6.1.192.tar.xz 96ea68b7cbd292b84c253cf1aadad30e920c960a
++sha256 linux-6.1.192.tar.xz 1e88e317e20dbc79a2cb9e3d9667e908b262d12e76eb66eed894c5460eb87fca
++sha512 linux-6.1.192.tar.xz 97e70533f5abbd45731f49e87e97dd49c5bfa480c3b7609f77041d7819d9d41d9d4be12104b84b1e83c19289db51fe2a5adb1cd8653e9788e4e2c74cf444aa5e
++md5 linux-6.1.192.tar.gz b72a5bd508bc4a8b7811f6a39986e9c8
++sha1 linux-6.1.192.tar.gz 089cc7fb2d0c86f87362e2b407146a5b9415f4ef
++sha256 linux-6.1.192.tar.gz 794bc54c6c7b1df6be2d7d5afd200017a6e561e0e2d2dd93d0cbefa3d1017235
++sha512 linux-6.1.192.tar.gz 71f8a28ee6a0fd9811dcac3fcec23f3a4aee2fa391df0186058cf27505fc44b1f6921447bab36311a0c90c97192771117d0f057b604b0969693a20e55e322754
+diff --git a/packages/linux/6.1.189/version.desc b/packages/linux/6.1.192/version.desc
+similarity index 100%
+rename from packages/linux/6.1.189/version.desc
+rename to packages/linux/6.1.192/version.desc
