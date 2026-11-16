@@ -1,0 +1,13 @@
+diff --git a/scripts/build/arch/sh.sh b/scripts/build/arch/sh.sh
+index 941b071b..4950d6df 100644
+--- a/scripts/build/arch/sh.sh
++++ b/scripts/build/arch/sh.sh
+@@ -5,7 +5,7 @@ CT_DoArchTupleValues () {
+     # like 'sheb-unknown-elf' even though GCC does. So keep the tuple just sh-*-elf
+     # unless user wants something specific (either CPU or explicit suffix).
+     if [ "${CT_ARCH_SH_VARIANT}" != "sh" -o -n "${CT_ARCH_SUFFIX}" ]; then
+-        CT_TARGET_ARCH="${CT_ARCH_SH_VARIANT}${CT_ARCH_SUFFIX:-${CT_ARCH_SH_FLOAT_SUFFIX}${CT_ARCH_SH_HIDE_ENDIAN_SUFFIX:-${target_endian_eb}${target_endian_el}}}"
++        CT_TARGET_ARCH="${CT_ARCH_SH_VARIANT}${CT_ARCH_SUFFIX:-${CT_ARCH_SH_FLOAT_SUFFIX}}"
+     fi
+ 
+     # Endianness stuff (uses non-standard CFLAGS). If both are compiled, let the
