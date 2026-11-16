@@ -1,0 +1,120 @@
+diff --git a/config/arch/sh.in b/config/arch/sh.in
+index 212f2260..e11a99ec 100644
+--- a/config/arch/sh.in
++++ b/config/arch/sh.in
+@@ -6,11 +6,10 @@
+ ## select ARCH_SUPPORTS_BOTH_MMU
+ ## select ARCH_DEFAULT_HAS_MMU
+ ## select ARCH_SUPPORTS_FLAT_FORMAT
+-## select ARCH_SUPPORTS_WITH_ENDIAN
+ ## select ARCH_SUPPORTS_EITHER_ENDIAN
+-## select ARCH_SUPPORTS_BOTH_ENDIAN
+ ## select ARCH_DEFAULT_LE
+ ## select ARCH_REQUIRES_MULTILIB
++## select ARCH_SUPPORTS_WITH_ENDIAN
+ ## select ARCH_NO_FLOAT_AUTO
+ ##
+ ## help The Super-H architecture, as defined by:
+@@ -28,6 +27,7 @@ choice
+ config ARCH_SH_SH
+     bool
+     prompt "unspecified"
++    select ARCH_SUPPORTS_BOTH_ENDIAN
+     select ARCH_SUPPORTS_WITH_CPU
+     help
+       If left unspecified, GCC will determine the set of multilibs to compile automatically
+@@ -71,14 +71,6 @@ config ARCH_SH_SH4AL
+ 
+ endchoice
+ 
+-config ARCH_SH_HIDE_ENDIAN_SUFFIX
+-    bool
+-    default y if !ARCH_BE
+-    depends on !ARCH_SH_SH && ARCH_SUFFIX=""
+-    prompt "Omit endianness suffix in truple"
+-    help
+-      Controls emission of the el/eb suffix to the arch part
+-
+ config ARCH_SH_VARIANT
+     string
+     default "sh"    if ARCH_SH_SH
+diff --git a/scripts/build/arch/sh.sh b/scripts/build/arch/sh.sh
+index 941b071b..ec450278 100644
+--- a/scripts/build/arch/sh.sh
++++ b/scripts/build/arch/sh.sh
+@@ -5,7 +5,7 @@ CT_DoArchTupleValues () {
+     # like 'sheb-unknown-elf' even though GCC does. So keep the tuple just sh-*-elf
+     # unless user wants something specific (either CPU or explicit suffix).
+     if [ "${CT_ARCH_SH_VARIANT}" != "sh" -o -n "${CT_ARCH_SUFFIX}" ]; then
+-        CT_TARGET_ARCH="${CT_ARCH_SH_VARIANT}${CT_ARCH_SUFFIX:-${CT_ARCH_SH_FLOAT_SUFFIX}${CT_ARCH_SH_HIDE_ENDIAN_SUFFIX:-${target_endian_eb}${target_endian_el}}}"
++        CT_TARGET_ARCH="${CT_ARCH_SH_VARIANT}${CT_ARCH_SUFFIX:-${CT_ARCH_SH_FLOAT_SUFFIX}${target_endian_eb}}"
+     fi
+ 
+     # Endianness stuff (uses non-standard CFLAGS). If both are compiled, let the
+@@ -18,11 +18,9 @@ CT_DoArchTupleValues () {
+     # Instead of -m{soft,hard}-float, uses CPU type
+     CT_ARCH_FLOAT_CFLAG=
+     CT_ARCH_WITH_FLOAT=
+-    CT_ARCH_CPU_CFLAG=
+     if [ "${CT_ARCH_SH_VARIANT}" != "sh" ]; then
+-        CT_ARCH_ARCH_CFLAG=-m${CT_ARCH_SH_VARIANT#sh}${CT_ARCH_SH_FLOAT_SUFFIX//_/-}
+-    else
+-        CT_ARCH_ARCH_CFLAG=${CT_ARCH_CPU:+-${CT_ARCH_CPU/#sh/m}${CT_ARCH_SH_FLOAT_SUFFIX//_/-}}
++        CT_ARCH_ARCH_CFLAG=-m${CT_ARCH_SH_VARIANT#sh}${CT_ARCH_SH_FLOAT_SUFFIX/_/-}
++        CT_ARCH_ARCH_CFLAG=${CT_ARCH_ARCH_CFLAG/_/-}
+     fi
+ }
+ 
+@@ -40,7 +38,11 @@ CT_DoArchMultilibList() {
+     # the default CPU configured with --with-cpu (CT_ARCH_CPU).
+     IFS=,
+     for x in ${CT_CC_GCC_MULTILIB_LIST}; do
+-        if [ "${x}" = "${CT_ARCH_ARCH_CFLAG#-}" -o "${x/#m/sh}" = "${CT_ARCH_ARCH_CFLAG#-}" ]; then
++        if [ "${x}" = "${CT_ARCH_ARCH_CFLAG#-}" -o "sh${x#m}" = "${CT_ARCH_ARCH_CFLAG#-}" ]; then
++            CT_DoLog WARN "Ignoring '${x}' in multilib list: it is the default multilib"
++            continue
++        fi
++        if [ "${x}" = "${CT_ARCH_CPU}" -o "sh${x#m}" = "${CT_ARCH_CPU}" -o "m${x#sh}" = "${CT_ARCH_CPU}" ]; then
+             CT_DoLog WARN "Ignoring '${x}' in multilib list: it is the default multilib"
+             continue
+         fi
+@@ -63,7 +65,7 @@ CT_DoArchMultilibTarget ()
+ 
+     for m in "${multi_flags[@]}"; do
+         case "${m}" in
+-            -m[12345]*) newcpu=${m/#-m/sh}; newcpu=${newcpu//_/-};;
++            -m[12345]*) newcpu=sh${m#-m}; newcpu=${newcpu/_/-}; newcpu=${newcpu/_/-};;
+         esac
+     done
+ 
+@@ -94,7 +96,8 @@ CT_DoArchGlibcAdjustTuple() {
+             # GCC defaults to sh1, but this Glibc cannot compile for it.
+             if [ -n "${CT_ARCH_CPU}" ]; then
+                 newtarget=${CT_ARCH_CPU/#m/sh}
+-                newtarget=${newtarget//-/_}
++                newtarget=${newtarget/-/_}
++                newtarget=${newtarget/-/_}
+                 target_="${newtarget}-${target_#*-}"
+                 CT_DoLog DEBUG "Adjusted target tuple ${target_}"
+             else
+@@ -131,7 +134,7 @@ CT_DoArchGlibcAdjustConfigure() {
+     # and it would've been handled above. Our last resort: CT_ARCH_CPU
+     if [ "${#add_args[@]}" = 0 ]; then
+         case "${CT_ARCH_CPU}" in
+-        sh[24]a-nofpu | m[24]a-nofpu | sh4-nofpu | m4-nofpu | sh4al | m4al)
++        sh[24]a-nofpu | m[24]a-nofpu | sh4-nofpu | m4-nofpu)
+             add_args+=( "--without-fp" )
+             ;;
+         *)
+diff --git a/scripts/config.sub b/scripts/config.sub
+index 61e7f95a..56db5e54 100755
+--- a/scripts/config.sub
++++ b/scripts/config.sub
+@@ -1414,7 +1414,6 @@ case $cpu-$vendor in
+ 			| sh4_single_onlye[lb] \
+ 			| sh4_singlee[lb] \
+ 			| sh4al \
+-			| sh4ale[lb] \
+ 			| sh64 \
+ 			| sh64le \
+ 			| sh[12345][lb]e \
